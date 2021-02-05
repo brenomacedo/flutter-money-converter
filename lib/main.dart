@@ -36,6 +36,52 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+  TextEditingController realController = TextEditingController();
+  TextEditingController dolarController = TextEditingController();
+  TextEditingController euroController = TextEditingController();
+
+  void clearAll(){
+    realController.text = "";
+    dolarController.text = "";
+    euroController.text = "";
+  }
+
+  void realChanged(text){
+
+    if(text.isEmpty) {
+      clearAll();
+      return;
+    }
+
+    double real = double.parse(text);
+    dolarController.text = (real/dolar).toStringAsFixed(2);
+    euroController.text = (real/euro).toStringAsFixed(2);
+  }
+
+  void dolarChanged(text){
+
+    if(text.isEmpty) {
+      clearAll();
+      return;
+    }
+
+    double dolar = double.parse(text);
+    realController.text = (dolar*this.dolar).toStringAsFixed(2);
+    euroController.text = (dolar*this.dolar/euro).toStringAsFixed(2);
+  }
+
+  void euroChanged(text){
+
+    if(text.isEmpty) {
+      clearAll();
+      return;
+    }
+
+    double euro = double.parse(text);
+    realController.text = (euro*this.euro).toStringAsFixed(2);
+    dolarController.text = (euro*this.euro/dolar).toStringAsFixed(2);
+  }
+
   double dolar;
   double euro;
 
@@ -72,11 +118,11 @@ class _HomeState extends State<Home> {
                 child: Column(
                   children: [
                     Icon(Icons.monetization_on, size: 150, color: Colors.amber),
-                    buildTextField("Reais", "R\$"),
+                    buildTextField("Reais", "R\$", realController, realChanged),
                     Divider(),
-                    buildTextField("Dolares", "US\$"),
+                    buildTextField("Dolares", "US\$", dolarController, dolarChanged),
                     Divider(),
-                    buildTextField("Euros", "€")
+                    buildTextField("Euros", "€", euroController, euroChanged)
                   ],
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                 ),
@@ -90,7 +136,7 @@ class _HomeState extends State<Home> {
   }
 }
 
-Widget buildTextField(String label, String prefix) {
+Widget buildTextField(String label, String prefix, TextEditingController controller, Function onChanged) {
   return TextField(
     decoration: InputDecoration(
       labelText: label,
@@ -99,5 +145,8 @@ Widget buildTextField(String label, String prefix) {
       prefixText: prefix
     ),
     style: TextStyle(color: Colors.amber, fontSize: 25.0),
+    controller: controller,
+    onChanged: onChanged,
+    keyboardType: TextInputType.numberWithOptions(decimal: true)
   );
 }
